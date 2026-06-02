@@ -1,0 +1,7 @@
+fastapi
+uvicorn
+pickle
+prometheus-client
+psutil
+pytest
+httpx
