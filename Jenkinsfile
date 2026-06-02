@@ -8,14 +8,15 @@ pipeline {
     stages {
         stage('Checkout') {
             steps {
-                git branch: 'main', url: 'https://github.com'
+                // Clona il repository Git contenente il codice dell'applicazione
+                git branch: 'main', url: 'https://github.com/stefano-clementini/sentiment-app.git'
             }
         }
 
         stage('Install Dependencies') {
             steps {
+                // Installa le dipendenze necessarie per l'applicazione
                 sh 'pip install -r requirements.txt'
-                sh 'python -m textblob.download_corpora'
             }
         }
 
@@ -28,6 +29,7 @@ pipeline {
 
         stage('Docker Build') {
             // Viene eseguito solo se i test passano
+            // Costruisce l'immagine Docker dell'applicazione
             steps {
                 sh "docker build -t ${DOCKER_IMAGE}:latest ."
             }

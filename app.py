@@ -5,12 +5,11 @@ import time
 import psutil
 import requests
 import pickle
-import uvicorn
 
 import logging
 
 logging.basicConfig(
-    # logger configuration
+    # configurazione del logger
     filename='log_restapi.log',
     level=logging.INFO,
     format= '[%(asctime)s] - %(levelname)s : %(message)s',
@@ -26,6 +25,7 @@ MODEL_ERRORS = Counter('model_errors_total', 'Numero di errori o predizioni fall
 CPU_USAGE = Gauge('process_cpu_usage_percent', 'Utilizzo CPU dell applicazione')
 MEMORY_USAGE = Gauge('process_memory_usage_bytes', 'Utilizzo memoria dell applicazione')
 
+# Modello per la Sentiment Analysis
 url = 'https://github.com/Profession-AI/progetti-devops/raw/refs/heads/main/Deploy e monitoraggio di un modello di sentiment analysis per recensioni/sentiment_analysis_model.pkl'
 filename = 'language_detection_pipeline.pkl'
 
@@ -35,7 +35,7 @@ logger.info(f"GET URL status: {response.status_code}")
 loaded_pipeline = None
 if response.status_code == 200:
    logger.info("Model Download completed")
-   # write file in local filesystem
+   # Salva il file localmente
    file_locale = open(filename,"wb")
    file_locale.write(response.content)
    file_locale.close()
@@ -43,7 +43,7 @@ else:
    logger.error("Model Download failed")
 
 try:
-    # ML model from file
+    # Carica il modello ML dal file
     loaded_pipeline = pickle.load(open(filename,"rb"))
     logger.info("Model ready to predict")
 except FileNotFoundError:
@@ -52,21 +52,27 @@ except FileNotFoundError:
 
 @app.get("/metrics")
 def metrics():
-    # Aggiorna le metriche hardware prima di esporle
+    """
+    Endpoint per esporre le metriche Prometheus. Colleziona le metriche hardware prima di restituire i dati.
+    """
+    # Colleziona le metriche hardware
     CPU_USAGE.set(psutil.cpu_percent())
     MEMORY_USAGE.set(psutil.virtual_memory().used)
     return Response(generate_latest(), media_type=CONTENT_TYPE_LATEST)
 
 @app.post("/predict")
 def predict_sentiment(review: str):
+    """
+    Endpoint per prevedere il sentiment di una recensione. Registra il tempo di risposta e gli errori del modello.
+    """
     start_time = time.time()
     try:
         if not review.strip():
             raise ValueError("Giudizio mancante")
-            
+        # Prevede il sentiment usando il modello caricato
         predicted_sentiment = loaded_pipeline.predict([review])[0]
         
-        # Determina il sentiment
+        # Determina il sentiment in base alla polarità
         polarity = predicted_sentiment.polarity
         if polarity > 0:
             sentiment = "positivo"
@@ -77,9 +83,9 @@ def predict_sentiment(review: str):
             
         # Registra il tempo di risposta
         REQUEST_TIME.labels(endpoint='/predict').observe(time.time() - start_time)
-        
+        # Restituisce il risultato della previsione
         return {"review": review, "sentiment": sentiment, "confidence": predicted_sentiment.confidence}
-        
     except Exception as e:
+        # Registra l'errore del modello
         MODEL_ERRORS.inc()
         return {"error": str(e)}
