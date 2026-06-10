@@ -2,7 +2,7 @@ git init
 git add .
 git commit -m "Initial commit: FastAPI sentiment app con Jenkins, Prometheus e Grafana"
 git branch -M main
-git remote add origin https://github.com
+git remote add origin https://github.com/stefano-clementini/sentiment-a
 git push -u origin main
 
 git config --global user.email "stefanocleme@inwind.it"
