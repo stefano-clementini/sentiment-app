@@ -5,4 +5,4 @@ psutil
 scikit-learn
 numpy
 pytest
-httpx
+httpx2
