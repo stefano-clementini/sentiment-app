@@ -1,6 +1,8 @@
 fastapi
-pickle
+uvicorn
 prometheus-client
 psutil
+scikit-learn
+numpy
 pytest
 httpx

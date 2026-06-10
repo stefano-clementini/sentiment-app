@@ -1,0 +1,9 @@
+git init
+git add .
+git commit -m "Initial commit: FastAPI sentiment app con Jenkins, Prometheus e Grafana"
+git branch -M main
+git remote add origin https://github.com
+git push -u origin main
+
+git config --global user.email "stefanocleme@inwind.it"
+git config --global user.name "stefano-clementini"
