@@ -1,0 +1,10 @@
+[2026-06-02 13:28:35] - INFO : GET URL status: 200
+[2026-06-02 13:28:35] - INFO : Model Download completed
+[2026-06-02 13:28:38] - INFO : Model ready to predict
+[2026-06-02 13:29:23] - INFO : GET URL status: 200
+[2026-06-02 13:29:23] - INFO : Model Download completed
+[2026-06-02 13:29:24] - INFO : Model ready to predict
+[2026-06-02 13:59:44] - INFO : GET URL status: 200
+[2026-06-02 13:59:44] - INFO : Model Download completed
+[2026-06-02 13:59:46] - INFO : Model ready to predict
+[2026-06-11 17:08:53] - INFO : Modello caricato da language_detection_pipeline.pkl

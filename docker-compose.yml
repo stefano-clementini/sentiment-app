@@ -1,0 +1,66 @@
+version: '3.8'
+
+services:
+  # Servizio FastAPI Sentiment Analysis
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: sentiment-app
+    ports:
+      - "8000:8000"
+    volumes:
+      - ./log_restapi.log:/app/log_restapi.log
+    environment:
+      - PYTHONUNBUFFERED=1
+    networks:
+      - monitoring
+    restart: unless-stopped
+
+  # Servizio Prometheus
+  prometheus:
+    build:
+      context: .
+      dockerfile: Dockerfile.prometheus
+    container_name: prometheus
+    ports:
+      - "9090:9090"
+    volumes:
+      - ./prometheus.yml:/etc/prometheus/prometheus.yml:ro
+      - prometheus_data:/prometheus
+    command:
+      - '--config.file=/etc/prometheus/prometheus.yml'
+      - '--storage.tsdb.path=/prometheus'
+    networks:
+      - monitoring
+    depends_on:
+      - app
+    restart: unless-stopped
+
+  # Servizio Grafana
+  grafana:
+    build:
+      context: .
+      dockerfile: Dockerfile.grafana
+    container_name: grafana
+    ports:
+      - "3000:3000"
+    volumes:
+      - grafana_data:/var/lib/grafana
+    environment:
+      - GF_SECURITY_ADMIN_USER=admin
+      - GF_SECURITY_ADMIN_PASSWORD=admin
+      - GF_USERS_ALLOW_SIGN_UP=false
+    networks:
+      - monitoring
+    depends_on:
+      - prometheus
+    restart: unless-stopped
+
+networks:
+  monitoring:
+    driver: bridge
+
+volumes:
+  prometheus_data:
+  grafana_data:

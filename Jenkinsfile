@@ -2,20 +2,32 @@ pipeline {
     agent any
 
     environment {
-        DOCKER_IMAGE = "sentiment-api-app"
+        DOCKER_IMAGE = "sentiment-app"
     }
 
     stages {
         stage('Checkout') {
             steps {
-                git branch: 'main', url: 'https://github.com'
+                git branch: 'main', url: 'https://github.com/stefano-clementini/sentiment-app'
             }
         }
 
+        stage('Run Unit Tests') {
+            steps {
+                // Creiamo un ambiente virtuale isolato per eseguire pytest
+                sh '''
+                    python3 -m venv venv
+                    . venv/bin/activate
+                    pip install --upgrade pip
+                    pip install -r requirements.txt
+                    pytest test_app.py -v
+                '''
+            }
+        }
+        /*
         stage('Install Dependencies') {
             steps {
                 sh 'pip install -r requirements.txt'
-                sh 'python -m textblob.download_corpora'
             }
         }
 
@@ -25,21 +37,23 @@ pipeline {
                 sh 'pytest test_app.py -v'
             }
         }
+        */
 
         stage('Docker Build') {
             // Viene eseguito solo se i test passano
             steps {
-                sh "docker build -t ${DOCKER_IMAGE}:latest ."
+                //sh "docker build -t ${DOCKER_IMAGE}:latest ."
+                sh 'docker-compose up -d'
             }
         }
+    }
 
-        stage('Docker Run / Deploy') {
-            steps {
-                // Ferma container vecchi e avvia il nuovo
-                sh 'docker stop sentiment-container || true'
-                sh 'docker rm sentiment-container || true'
-                sh "docker run -d -p 8000:8000 --name sentiment-container ${DOCKER_IMAGE}:latest"
-            }
+
+    
+    post {
+        always {
+            // Pulizia dell'area di lavoro alla fine della pipeline
+            cleanWs()
         }
     }
 }

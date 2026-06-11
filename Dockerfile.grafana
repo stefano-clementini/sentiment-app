@@ -1,0 +1,11 @@
+FROM grafana/grafana:latest
+
+# Variabili di ambiente per la configurazione iniziale
+ENV GF_SECURITY_ADMIN_USER=admin
+ENV GF_SECURITY_ADMIN_PASSWORD=admin
+ENV GF_INSTALL_PLUGINS=
+
+# Copia il file di provisioning del datasource
+COPY grafana-datasource.yml /etc/grafana/provisioning/datasources/datasource.yml
+
+EXPOSE 3000
