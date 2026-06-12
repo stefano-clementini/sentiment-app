@@ -33,5 +33,25 @@ Nel dettaglio il progetto include:
     7.1  Dockerfile: file di configurazione per il container dell'app
     7.2  Dokerfile.jenkins: file per creare il container che deve contenere Jenkins 
     7.3  Dokerfile.promethes: file per creare il container che deve contenere Prometheus 
-    7.4  Dokerfile.grafana: file per creare il container che deve contenere Grafana      
+    7.4  Dokerfile.grafana: file per creare il container che deve contenere Grafana
 
+-----------------------------------
+
+Per avviare tutto, bisogna possedere un Docker in locale o un Docker-Hub.
+
+Per creare il container:
+docker build -t custom-jenkins:latest .
+
+Per eseguirlo:
+docker run -d \
+  -p 8080:8080 \
+  -p 50000:50000 \
+  -v jenkins_home:/var/jenkins_home \
+  -v /var/run/docker.sock:/var/run/docker.sock \
+  --name jenkins-local \
+  custom-jenkins:latest
+
+Una volta che sarà tutto deployato ed avviato sarà possibile raggiungere:
+- App:         http://localhost:8000
+- Prometheus:  http://localhost:9090
+- Grafana:     http://localhost:3000 (admin/admin)
