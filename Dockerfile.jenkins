@@ -1,0 +1,26 @@
+FROM jenkins/jenkins:latest
+
+# Installa plugin Jenkins utili per la pipeline
+RUN jenkins-plugin-cli --plugins \
+    pipeline-stage-view:2.31 \
+    pipeline-model-definition:2.2.10 \
+    docker-plugin:1.2.11 \
+    github:1.40.0 \
+    git:5.2.1 \
+    junit:1.69.1 \
+    cobertura:1.17 \
+    email-ext:2.105
+
+# Installa Python e utilità
+USER root
+RUN apt-get update && apt-get install -y \
+    python3 \
+    python3-pip \
+    git \
+    && rm -rf /var/lib/apt/lists/*
+
+# Ritorna all'utente jenkins
+USER jenkins
+
+# Espone la porta di Jenkins
+EXPOSE 8080 50000

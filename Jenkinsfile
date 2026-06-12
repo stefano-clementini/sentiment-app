@@ -39,21 +39,27 @@ pipeline {
         }
         */
 
-        stage('Docker Build') {
-            // Viene eseguito solo se i test passano
+        stage('Docker Deploy') {
             steps {
-                //sh "docker build -t ${DOCKER_IMAGE}:latest ."
-                sh 'docker-compose up -d'
+                // Ferma eventuali container vecchi, builda la nuova immagine e la avvia
+                sh '''
+                    docker-compose down
+                    docker-compose up --build -d
+                '''
             }
-        }
+        } 
     }
 
 
     
     post {
         always {
-            // Pulizia dell'area di lavoro alla fine della pipeline
+            // Pulisce il workspace di Jenkins
             cleanWs()
+        }
+        failure {
+            echo "La pipeline è fallita. Controlla i test o i comandi Docker."
         }
     }
 }
+
