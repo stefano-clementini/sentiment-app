@@ -21,12 +21,17 @@ Nel dettaglio il progetto include:
 4.  Jenkinsfile: file per implementare la CI\CD. 
     Le Fasi della Pipeline (Stages)
     - Checkout: Scarica il codice sorgente dal ramo main di GitHub.
-    - Install Dependencies: Installa i pacchetti Python richiesti tramite pip.
-    - Run Unit Tests: Esegue i test unitari con pytest. Se un test fallisce, la pipeline si blocca.
-    - Docker Build: Crea l'immagine Docker dell'applicazione usando il Dockerfile presente nel progetto.
-    - Docker Run / Deploy: Rilascia l'applicazione. Ferma e rimuove eventuali container vecchi con lo stesso nome, poi avvia il nuovo container esponendo la porta 8000
+    - Install Dependencies: 
+    - Run Unit Tests: Esegue i test unitari con pytest. Se un test fallisce, la pipeline si blocca. Installa i pacchetti Python richiesti tramite pip in un ambiente virtuale per poterlo rimuovere al termine.
+    - Docker Build: Crea l'immagine Docker dell'applicazione usando il docker-compose che consente di avviare più container insieme. Una volta avviati i container sarà possibile accedere sulla RestAPI, su Prometheus (per osservare le metriche), su Grafana (per visualizzae i grafici dei dati collezionati da Prometheus)
 
-5.  Dockerfile: File che Docker usa per creare un'immagine. 
-    Installa le dipendenze (requirement.txt) e contiene le informazioni per lanciare l'applicativo (app.py)
+5.  prometheus.yml: filee di configurazione per Prometheus, che richiama l'app
 
-6.  prometheus.yml: file per la configurazione di Promethes per la collezione delle metriche
+6.  grafana-datasource.yml: filee di configurazione per Grafana, che richiama Prometheus
+
+7.  docker-compose: file per racchidere tutti i container necessari per il progetto.
+    7.1  Dockerfile: file di configurazione per il container dell'app
+    7.2  Dokerfile.jenkins: file per creare il container che deve contenere Jenkins 
+    7.3  Dokerfile.promethes: file per creare il container che deve contenere Prometheus 
+    7.4  Dokerfile.grafana: file per creare il container che deve contenere Grafana      
+
